@@ -1,0 +1,187 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - umkm_network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - umkm_network
+
+  # Odoo Application
+  odoo:
+    image: odoo:17.0
+    depends_on:
+      - db
+      - redis
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo_password
+      - POSTGRES_DB=postgres
+    volumes:
+      - odoo_data:/var/lib/odoo
+      - ./custom_modules:/mnt/extra-addons
+      - ./config:/etc/odoo
+    ports:
+      - "8069:8069"
+    restart: unless-stopped
+    networks:
+      - umkm_network
+    command: odoo --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons
+
+  # FastAPI Mobile Backend
+  api:
+    build: 
+      context: ./mobile_api
+      dockerfile: Dockerfile
+    depends_on:
+      - odoo
+      - redis
+    environment:
+      - ODOO_URL=http://odoo:8069
+      - ODOO_DB=umkm_marketplace
+      - ODOO_USERNAME=admin
+      - ODOO_PASSWORD=admin
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./mobile_api:/app
+      - api_uploads:/app/uploads
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - umkm_network
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    depends_on:
+      - odoo
+      - api
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    networks:
+      - umkm_network
+
+  # pgAdmin (Database Management)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@umkmdigital.id
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    networks:
+      - umkm_network
+
+  # Monitoring - Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    networks:
+      - umkm_network
+
+  # Monitoring - Grafana
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - umkm_network
+
+  # Log Management - ELK Stack
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    restart: unless-stopped
+    networks:
+      - umkm_network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    networks:
+      - umkm_network
+
+  # Message Queue - RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: umkm
+      RABBITMQ_DEFAULT_PASS: umkm123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: unless-stopped
+    networks:
+      - umkm_network
+
+volumes:
+  postgres_data:
+  redis_data:
+  odoo_data:
+  api_uploads:
+  pgadmin_data:
+  prometheus_data:
+  grafana_data:
+  elasticsearch_data:
+  rabbitmq_data:
+
+networks:
+  umkm_network:
+    driver: bridge
