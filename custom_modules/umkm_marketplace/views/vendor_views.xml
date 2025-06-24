@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Vendor Tree View -->
+        <record id="view_umkm_vendor_tree" model="ir.ui.view">
+            <field name="name">umkm.vendor.tree</field>
+            <field name="model">umkm.vendor</field>
+            <field name="arch" type="xml">
+                <tree string="UMKM Vendors">
+                    <field name="name"/>
+                    <field name="business_type"/>
+                    <field name="partner_id"/>
+                    <field name="state"/>
+                    <field name="created_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vendor Form View -->
+        <record id="view_umkm_vendor_form" model="ir.ui.view">
+            <field name="name">umkm.vendor.form</field>
+            <field name="model">umkm.vendor</field>
+            <field name="arch" type="xml">
+                <form string="UMKM Vendor">
+                    <header>
+                        <button name="action_approve" string="Approve" type="object" 
+                                invisible="state != 'draft'" class="btn-primary"/>
+                        <button name="action_reject" string="Reject" type="object" 
+                                invisible="state != 'draft'" class="btn-secondary"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group string="Basic Information">
+                                <field name="name"/>
+                                <field name="business_type"/>
+                                <field name="partner_id"/>
+                                <field name="user_id"/>
+                            </group>
+                            <group string="Business Details">
+                                <field name="established_year"/>
+                                <field name="employee_count"/>
+                                <field name="monthly_revenue"/>
+                            </group>
+                        </group>
+                        <group string="Legal Documents">
+                            <group>
+                                <field name="nib_number"/>
+                                <field name="npwp_number"/>
+                            </group>
+                            <group>
+                                <field name="siup_number"/>
+                            </group>
+                        </group>
+                        <group string="Certifications">
+                            <group>
+                                <field name="halal_certified"/>
+                                <field name="halal_certificate_number" invisible="not halal_certified"/>
+                                <field name="halal_expiry_date" invisible="not halal_certified"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vendor Action -->
+        <record id="action_umkm_vendor" model="ir.actions.act_window">
+            <field name="name">UMKM Vendors</field>
+            <field name="res_model">umkm.vendor</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first UMKM vendor!
+                </p>
+                <p>
+                    Manage vendors in your UMKM marketplace. Add new vendors, 
+                    track their business information, and manage their status.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -182,6 +182,12 @@ class UMKMVendor(models.Model):
         ('blocked', 'Blocked'),
     ], string='Status', default='draft', tracking=True)
     
+    created_date = fields.Datetime(
+        string='Created Date',
+        default=fields.Datetime.now,
+        readonly=True
+    )
+    
     verification_date = fields.Datetime(
         string='Verification Date',
         readonly=True
@@ -241,17 +247,8 @@ class UMKMVendor(models.Model):
     )
     
     # Relations
-    product_ids = fields.One2many(
-        'product.template',
-        'vendor_id',
-        string='Products'
-    )
-    
-    order_ids = fields.One2many(
-        'sale.order',
-        'vendor_id',
-        string='Orders'
-    )
+    # Note: product_ids and order_ids would need vendor_id fields added to those models
+    # or separate intermediary models to be created
     
     certification_ids = fields.One2many(
         'umkm.certification',
@@ -316,33 +313,23 @@ class UMKMVendor(models.Model):
                 raise ValidationError(_('Established year cannot be before 1945'))
     
     # Compute Methods
-    @api.depends('product_ids')
     def _compute_product_count(self):
         for record in self:
-            record.product_count = len(record.product_ids)
+            # This would need to be implemented when product model is extended
+            record.product_count = 0
     
-    @api.depends('order_ids')
     def _compute_order_count(self):
         for record in self:
-            record.order_count = len(record.order_ids)
+            # This would need to be implemented when order model is extended
+            record.order_count = 0
     
-    @api.depends('order_ids', 'order_ids.amount_total', 'order_ids.rating_last_value')
     def _compute_performance_metrics(self):
         for record in self:
-            orders = record.order_ids.filtered(lambda o: o.state in ['sale', 'done'])
-            
-            # Total sales
-            record.total_sales = sum(orders.mapped('amount_total'))
-            
-            # Total orders
-            record.total_orders = len(orders)
-            
-            # Average rating
-            ratings = orders.mapped('rating_last_value')
-            ratings = [r for r in ratings if r > 0]
-            record.avg_rating = sum(ratings) / len(ratings) if ratings else 0
-            
-            # Response time (placeholder - would need real implementation)
+            # Initialize with default values for now
+            # These would be computed from actual orders when order system is implemented
+            record.total_sales = 0.0
+            record.total_orders = 0
+            record.avg_rating = 0.0
             record.response_time = 2.5  # Default 2.5 hours
     
     # CRUD Methods
@@ -446,6 +433,20 @@ class UMKMVendor(models.Model):
             body=_('Vendor blocked permanently'),
             message_type='notification'
         )
+    
+    def action_approve(self):
+        """Approve vendor registration"""
+        self.write({
+            'state': 'verified',
+            'verification_date': fields.Datetime.now(),
+            'verified_by': self.env.user.id,
+        })
+    
+    def action_reject(self):
+        """Reject vendor registration"""
+        self.write({
+            'state': 'draft',
+        })
     
     # Business Methods
     def calculate_commission(self, amount):

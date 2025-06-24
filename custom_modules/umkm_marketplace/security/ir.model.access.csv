@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_umkm_vendor_user,umkm.vendor.user,model_umkm_vendor,group_umkm_vendor,1,1,1,0
+access_umkm_vendor_manager,umkm.vendor.manager,model_umkm_vendor,group_umkm_manager,1,1,1,1
+access_umkm_vendor_admin,umkm.vendor.admin,model_umkm_vendor,group_umkm_admin,1,1,1,1
+access_umkm_vendor_public,umkm.vendor.public,model_umkm_vendor,base.group_public,1,0,0,0
+access_umkm_vendor_portal,umkm.vendor.portal,model_umkm_vendor,base.group_portal,1,0,0,0
+access_umkm_certification_user,umkm.certification.user,model_umkm_certification,group_umkm_vendor,1,1,1,0
+access_umkm_certification_manager,umkm.certification.manager,model_umkm_certification,group_umkm_manager,1,1,1,1
+access_umkm_certification_admin,umkm.certification.admin,model_umkm_certification,group_umkm_admin,1,1,1,1

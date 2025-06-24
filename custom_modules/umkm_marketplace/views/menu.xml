@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Main Menu -->
+        <menuitem id="menu_umkm_marketplace_root" 
+                  name="UMKM Marketplace" 
+                  sequence="10"
+                  web_icon="umkm_marketplace,static/description/icon.png"/>
+
+        <!-- Vendors Menu -->
+        <menuitem id="menu_umkm_vendors" 
+                  name="Vendors" 
+                  parent="menu_umkm_marketplace_root" 
+                  sequence="10"/>
+
+        <menuitem id="menu_umkm_vendor_list" 
+                  name="All Vendors" 
+                  parent="menu_umkm_vendors" 
+                  action="action_umkm_vendor" 
+                  sequence="10"/>
+
+        <!-- Configuration Menu -->
+        <menuitem id="menu_umkm_configuration" 
+                  name="Configuration" 
+                  parent="menu_umkm_marketplace_root" 
+                  sequence="90"/>
+
+    </data>
+</odoo>
