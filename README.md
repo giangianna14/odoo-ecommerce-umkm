@@ -1,53 +1,396 @@
-# UMKM Digital Marketplace - Development Setup Guide
+# 🏪 UMKM Marketplace - E-commerce Platform for Indonesian MSMEs
 
-## 🚀 QUICK START GUIDE
+[![License](https://img.shields.io/badge/license-LGPL--3-blue.svg)](LICENSE)
+[![Odoo Version](https://img.shields.io/badge/Odoo-17.0-purple.svg)](https://www.odoo.com/)
+[![Python Version](https://img.shields.io/badge/Python-3.8+-green.svg)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
 
-### Prerequisites
-- **Python 3.9+**
-- **PostgreSQL 12+**
-- **Node.js 16+** (untuk frontend development)
-- **Docker & Docker Compose** (recommended)
-- **Git**
+**UMKM Marketplace** is a comprehensive e-commerce platform specifically designed for Indonesian Micro, Small, and Medium Enterprises (UMKM). Built on Odoo 17, it provides a complete marketplace solution with multi-vendor support, Indonesian payment methods, and local business compliance features.
 
-### 1. Environment Setup
+## 🎯 Features
 
-#### Clone Repository
+### 🏪 Multi-Vendor Marketplace
+- **Vendor Management**: Complete vendor onboarding and management system
+- **Product Catalog**: Rich product catalog with categories and certifications
+- **Order Processing**: Automated order processing with vendor notifications
+- **Commission System**: Flexible commission calculation and payment tracking
+
+### 💰 Indonesian Payment Integration
+- **Local Payment Methods**: Dana, OVO, GoPay, Bank Transfer, and more
+- **Midtrans Integration**: Secure payment processing
+- **Multiple Currencies**: IDR primary with multi-currency support
+- **Payment Tracking**: Real-time payment status monitoring
+
+### 📋 Business Compliance
+- **Halal Certification**: MUI Halal certification management
+- **SNI Standards**: Indonesian National Standard compliance
+- **Business Licenses**: Automated business verification
+- **Tax Integration**: Indonesian tax calculation and reporting
+
+### 📊 Analytics & Reporting
+- **Vendor Dashboard**: Comprehensive vendor performance analytics
+- **Admin Dashboard**: System-wide analytics and reporting
+- **Sales Reports**: Detailed sales and commission reports
+- **Performance Metrics**: Real-time business intelligence
+
+### 📱 Mobile & API
+- **RESTful API**: Complete API for mobile apps and integrations
+- **Mobile Responsive**: Mobile-optimized web interface
+- **Real-time Updates**: WebSocket support for live updates
+- **Offline Capability**: Progressive Web App features
+
+## 🚀 Quick Start
+
+### Using Docker (Recommended)
+
+1. **Clone the repository**
 ```bash
-git clone https://github.com/umkm-digital/odoo-ecommerce-umkm.git
+git clone https://github.com/YOUR_USERNAME/odoo-ecommerce-umkm.git
 cd odoo-ecommerce-umkm
 ```
 
-#### Create Environment File
+2. **Setup environment**
 ```bash
 cp .env.example .env
+# Edit .env file with your configuration
 ```
 
-Edit `.env` file:
-```env
-# Odoo Configuration
-ODOO_VERSION=17.0
-ODOO_DB_HOST=db
-ODOO_DB_PORT=5432
-ODOO_DB_USER=odoo
-ODOO_DB_PASSWORD=odoo_password
-ODOO_ADMIN_PASSWORD=admin123
+3. **Start services**
+```bash
+docker-compose up -d
+```
 
+4. **Install UMKM module**
+```bash
+python3 install_umkm.py
+```
+
+5. **Access the system**
+- **Web Interface**: http://localhost:8069
+- **Admin Login**: admin / admin
+- **API Documentation**: http://localhost:8069/api/docs
+
+### Manual Installation
+
+See [INSTALLATION.md](INSTALLATION.md) for detailed manual installation instructions.
+
+## 📋 System Requirements
+
+### Minimum Requirements
+- **RAM**: 4GB
+- **Storage**: 20GB free space
+- **CPU**: 2 cores
+- **OS**: Ubuntu 18.04+, CentOS 7+, or similar Linux distribution
+
+### Recommended for Production
+- **RAM**: 8GB or more
+- **Storage**: 50GB+ SSD
+- **CPU**: 4+ cores
+- **OS**: Ubuntu 20.04+ LTS
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   Odoo Core     │    │   Database      │
+│   (Web/Mobile)  │◄──►│   Application   │◄──►│   PostgreSQL    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Mobile API    │    │   UMKM Module   │    │   Redis Cache   │
+│   (FastAPI)     │    │   (Custom)      │    │   & Sessions    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Payment       │    │   Monitoring    │    │   File Storage  │
+│   Gateways      │    │   & Analytics   │    │   & CDN         │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+## 📁 Project Structure
+
+```
+odoo-ecommerce-umkm/
+├── custom_modules/              # Custom Odoo modules
+│   └── umkm_marketplace/        # Main UMKM module
+│       ├── models/              # Data models
+│       ├── views/               # UI views and templates
+│       ├── static/              # CSS, JS, images
+│       ├── data/                # Initial data and configs
+│       ├── security/            # Access rights and rules
+│       └── wizard/              # Wizard forms
+├── mobile_api/                  # FastAPI mobile backend
+├── config/                      # Configuration files
+├── nginx/                       # Nginx configuration
+├── monitoring/                  # Monitoring setup
+├── docs/                        # Documentation
+├── tests/                       # Test files
+├── scripts/                     # Utility scripts
+├── docker-compose.yml           # Docker orchestration
+├── .env.example                 # Environment template
+└── requirements.txt             # Python dependencies
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env` file based on `.env.example`:
+
+```env
 # Database Configuration
-POSTGRES_DB=postgres
+POSTGRES_DB=umkm_db
 POSTGRES_USER=odoo
-POSTGRES_PASSWORD=odoo_password
+POSTGRES_PASSWORD=your_secure_password
+
+# Odoo Configuration
+ODOO_ADMIN_PASSWORD=your_admin_password
+ODOO_DB_FILTER=umkm_db
 
 # API Configuration
-API_SECRET_KEY=your-secret-key-here
-API_HOST=localhost
-API_PORT=8000
+API_SECRET_KEY=your_secret_key_here
+JWT_SECRET_KEY=your_jwt_secret_here
 
-# External Services
-MIDTRANS_SERVER_KEY=your-midtrans-key
-MIDTRANS_CLIENT_KEY=your-midtrans-client-key
+# Payment Gateway Configuration
+MIDTRANS_SERVER_KEY=your_midtrans_server_key
+MIDTRANS_CLIENT_KEY=your_midtrans_client_key
 MIDTRANS_IS_PRODUCTION=false
 
 # Email Configuration
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your_email@domain.com
+EMAIL_HOST_PASSWORD=your_email_password
+
+# External Services
+WHATSAPP_API_KEY=your_whatsapp_api_key
+SMS_API_KEY=your_sms_api_key
+```
+
+### Payment Gateway Setup
+
+#### Midtrans Configuration
+1. Register at [Midtrans](https://midtrans.com/)
+2. Get your Server Key and Client Key
+3. Configure in environment variables
+4. Set webhook URL: `https://yourdomain.com/payment/midtrans/webhook`
+
+#### Other Payment Methods
+- **Bank Transfer**: Configure bank accounts in Payment Methods
+- **E-wallet**: Setup OVO, Dana, GoPay integration
+- **Credit Card**: Enable through Midtrans
+
+## 🔌 API Documentation
+
+The UMKM Marketplace provides a comprehensive RESTful API for mobile applications and third-party integrations.
+
+### Authentication
+```bash
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+```
+
+### Key Endpoints
+- **Products**: `/api/products` - Product management
+- **Orders**: `/api/orders` - Order processing
+- **Vendors**: `/api/vendors` - Vendor management
+- **Customers**: `/api/customers` - Customer data
+- **Analytics**: `/api/analytics` - Business intelligence
+
+For complete API documentation, see [API_DOCUMENTATION.md](API_DOCUMENTATION.md).
+
+## 🧪 Testing
+
+### Running Tests
+```bash
+# Run all tests
+docker-compose exec odoo python -m pytest tests/
+
+# Run specific test categories
+docker-compose exec odoo python -m pytest tests/unit/
+docker-compose exec odoo python -m pytest tests/integration/
+
+# Run with coverage
+docker-compose exec odoo python -m pytest --cov=custom_modules tests/
+```
+
+### Test Data
+```bash
+# Load test data
+python3 scripts/load_test_data.py
+
+# Create demo vendors and products
+python3 scripts/create_demo_data.py
+```
+
+## 📊 Monitoring & Analytics
+
+### Built-in Monitoring
+- **Grafana Dashboard**: http://localhost:3000 (admin/admin)
+- **Prometheus Metrics**: http://localhost:9090
+- **Elasticsearch Logs**: http://localhost:9200
+- **Kibana Analytics**: http://localhost:5601
+
+### Performance Monitoring
+- Real-time system metrics
+- Application performance monitoring
+- Database query optimization
+- User behavior analytics
+
+## 🚀 Deployment
+
+### Development
+```bash
+# Start development environment
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+```
+
+### Production
+```bash
+# Start production environment
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+### Scaling
+```bash
+# Scale Odoo instances
+docker-compose up -d --scale odoo=3
+
+# Scale API instances
+docker-compose up -d --scale api=2
+```
+
+## 🔒 Security
+
+### Security Features
+- **Input Validation**: All inputs are validated and sanitized
+- **Access Control**: Role-based access control (RBAC)
+- **Data Encryption**: Sensitive data encryption at rest
+- **Secure Communication**: HTTPS/TLS encryption
+- **Audit Logs**: Comprehensive audit trail
+
+### Security Best Practices
+- Regular security updates
+- Strong password policies
+- Multi-factor authentication (MFA)
+- Regular backups and disaster recovery
+- Penetration testing
+
+## 🌐 Internationalization
+
+### Supported Languages
+- **Indonesian** (Bahasa Indonesia) - Primary
+- **English** - Secondary
+- **Extensible**: Easy to add more languages
+
+### Adding Translations
+1. Extract translatable strings
+2. Create language-specific PO files
+3. Translate strings
+4. Compile translations
+
+## 📚 Documentation
+
+- **[User Guide](USER_GUIDE.md)** - Complete user documentation
+- **[Installation Guide](INSTALLATION.md)** - Detailed installation instructions
+- **[API Documentation](API_DOCUMENTATION.md)** - Complete API reference
+- **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
+- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- Code of conduct
+- Development setup
+- Submission process
+- Coding standards
+- Testing requirements
+
+### Quick Contribution Steps
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the **LGPL-3 License** - see the [LICENSE](LICENSE) file for details.
+
+## 🏆 Acknowledgments
+
+- **Odoo Community**: For the amazing framework
+- **Indonesian UMKM Community**: For inspiration and feedback
+- **Contributors**: All our amazing contributors
+- **Open Source Libraries**: Various open source projects that make this possible
+
+## 📞 Support & Contact
+
+### Community Support
+- **GitHub Issues**: [Report bugs and request features](https://github.com/YOUR_USERNAME/odoo-ecommerce-umkm/issues)
+- **Discussions**: [Join community discussions](https://github.com/YOUR_USERNAME/odoo-ecommerce-umkm/discussions)
+- **Documentation**: [Browse our docs](https://umkm-marketplace.readthedocs.io)
+
+### Professional Support
+- **Email**: support@umkmdigital.id
+- **Website**: https://umkmdigital.id
+- **LinkedIn**: [UMKM Digital Solutions](https://linkedin.com/company/umkm-digital)
+
+### Enterprise Services
+We offer enterprise services including:
+- Custom development and integration
+- Deployment and hosting
+- Training and consulting
+- 24/7 technical support
+- SLA guarantees
+
+## 🗺️ Roadmap
+
+### Version 1.1.0 (Q2 2024)
+- [ ] Advanced analytics and reporting
+- [ ] Enhanced mobile app integration
+- [ ] Social media marketing tools
+- [ ] Inventory management improvements
+
+### Version 1.2.0 (Q3 2024)
+- [ ] AI-powered product recommendations
+- [ ] Advanced shipping integrations
+- [ ] Multi-currency support
+- [ ] Enhanced SEO tools
+
+### Version 2.0.0 (Q4 2024)
+- [ ] Marketplace federation
+- [ ] Blockchain integration for supply chain
+- [ ] Advanced AI features
+- [ ] Enhanced mobile apps
+
+## 📈 Statistics
+
+- **⭐ Stars**: Help us reach 1000 stars!
+- **🍴 Forks**: Join our growing community
+- **📊 Used by**: Growing number of Indonesian MSMEs
+- **🌍 Countries**: Expanding beyond Indonesia
+
+---
+
+<div align="center">
+
+**Made with ❤️ for Indonesian MSMEs**
+
+[⭐ Star this project](https://github.com/YOUR_USERNAME/odoo-ecommerce-umkm) | 
+[🐛 Report Bug](https://github.com/YOUR_USERNAME/odoo-ecommerce-umkm/issues) | 
+[✨ Request Feature](https://github.com/YOUR_USERNAME/odoo-ecommerce-umkm/issues) | 
+[📖 Documentation](USER_GUIDE.md)
+
+</div>
 SMTP_SERVER=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your-email@gmail.com

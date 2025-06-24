@@ -52,6 +52,8 @@
         'security/ir.model.access.csv',
         
         # Data files
+        'data/sequences.xml',
+        'data/dashboard.xml',
         'data/payment_methods.xml',
         'data/shipping_methods.xml',
         'data/certification_types.xml',

@@ -1,6 +1,288 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Order views will be defined here -->
+        
+        <!-- Order Tree View -->
+        <record id="umkm_order_tree_view" model="ir.ui.view">
+            <field name="name">umkm.order.tree</field>
+            <field name="model">umkm.order</field>
+            <field name="arch" type="xml">
+                <tree string="Orders">
+                    <field name="name"/>
+                    <field name="customer_id"/>
+                    <field name="date_order"/>
+                    <field name="vendor_count"/>
+                    <field name="amount_total" widget="monetary"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="payment_status" decoration-success="payment_status=='paid'" decoration-warning="payment_status=='pending'"/>
+                    <field name="delivery_status" decoration-success="delivery_status=='delivered'" decoration-info="delivery_status=='shipped'"/>
+                    <field name="state" decoration-success="state=='done'" decoration-info="state=='sale'" decoration-warning="state=='sent'"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Order Form View -->
+        <record id="umkm_order_form_view" model="ir.ui.view">
+            <field name="name">umkm.order.form</field>
+            <field name="model">umkm.order</field>
+            <field name="arch" type="xml">
+                <form string="Order">
+                    <header>
+                        <button name="action_confirm" string="Confirm Order" type="object" 
+                                invisible="state != 'draft'" class="btn-primary"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,sent,sale,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" type="object" name="action_view_vendor_orders" icon="fa-users">
+                                <field string="Vendor Orders" name="vendor_count" widget="statinfo"/>
+                            </button>
+                        </div>
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group string="Customer Information">
+                                <field name="customer_id" required="1"/>
+                                <field name="customer_email"/>
+                                <field name="customer_phone"/>
+                                <field name="date_order"/>
+                            </group>
+                            <group string="Delivery Information">
+                                <field name="delivery_address_id"/>
+                                <field name="delivery_method_id"/>
+                                <field name="delivery_status"/>
+                                <field name="delivery_tracking_number"/>
+                                <field name="expected_delivery_date"/>
+                                <field name="delivery_date"/>
+                            </group>
+                        </group>
+                        
+                        <group>
+                            <group string="Payment Information">
+                                <field name="payment_method_id"/>
+                                <field name="payment_status"/>
+                                <field name="payment_reference"/>
+                            </group>
+                            <group string="Order Dates">
+                                <field name="confirmation_date"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Order Lines">
+                                <field name="order_line_ids">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="product_id" required="1"/>
+                                        <field name="vendor_id" readonly="1"/>
+                                        <field name="name" required="1"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="price_unit"/>
+                                        <field name="discount"/>
+                                        <field name="tax_ids" widget="many2many_tags"/>
+                                        <field name="price_subtotal" widget="monetary"/>
+                                        <field name="price_total" widget="monetary"/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_untaxed" widget="monetary"/>
+                                    <field name="amount_tax" widget="monetary"/>
+                                    <field name="amount_delivery" widget="monetary"/>
+                                    <div class="oe_subtotal_footer_separator oe_inline">
+                                        <label for="amount_total"/>
+                                        <field name="amount_total" nolabel="1" class="oe_subtotal_footer_total" widget="monetary"/>
+                                    </div>
+                                </group>
+                            </page>
+                            
+                            <page string="Vendor Orders">
+                                <field name="vendor_orders">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="vendor_id"/>
+                                        <field name="state"/>
+                                        <field name="tracking_number"/>
+                                        <field name="amount_total" widget="monetary"/>
+                                        <field name="commission_amount" widget="monetary"/>
+                                        <field name="vendor_amount" widget="monetary"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            
+                            <page string="Other Information">
+                                <group>
+                                    <field name="note"/>
+                                    <field name="customer_note"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Order Search View -->
+        <record id="umkm_order_search_view" model="ir.ui.view">
+            <field name="name">umkm.order.search</field>
+            <field name="model">umkm.order</field>
+            <field name="arch" type="xml">
+                <search string="Orders">
+                    <field name="name" string="Order" filter_domain="[('name','ilike',self)]"/>
+                    <field name="customer_id"/>
+                    <field name="payment_reference"/>
+                    <field name="delivery_tracking_number"/>
+                    <separator/>
+                    <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Sales Order" name="sale" domain="[('state', '=', 'sale')]"/>
+                    <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                    <separator/>
+                    <filter string="Payment Pending" name="payment_pending" domain="[('payment_status', '=', 'pending')]"/>
+                    <filter string="Paid" name="paid" domain="[('payment_status', '=', 'paid')]"/>
+                    <separator/>
+                    <filter string="Pending Delivery" name="delivery_pending" domain="[('delivery_status', '=', 'pending')]"/>
+                    <filter string="Shipped" name="shipped" domain="[('delivery_status', '=', 'shipped')]"/>
+                    <filter string="Delivered" name="delivered" domain="[('delivery_status', '=', 'delivered')]"/>
+                    <separator/>
+                    <filter string="Today" name="today" domain="[('date_order', '&gt;=', (context_today()).strftime('%Y-%m-%d'))]"/>
+                    <filter string="This Week" name="this_week" domain="[('date_order', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                    <filter string="This Month" name="this_month" domain="[('date_order', '&gt;=', (context_today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Customer" name="group_customer" domain="[]" context="{'group_by':'customer_id'}"/>
+                        <filter string="Status" name="group_state" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="Payment Status" name="group_payment" domain="[]" context="{'group_by':'payment_status'}"/>
+                        <filter string="Delivery Status" name="group_delivery" domain="[]" context="{'group_by':'delivery_status'}"/>
+                        <filter string="Order Date" name="group_date" domain="[]" context="{'group_by':'date_order:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Order Action -->
+        <record id="umkm_order_action" model="ir.actions.act_window">
+            <field name="name">Orders</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">umkm.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="umkm_order_search_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No orders yet!
+                </p>
+                <p>
+                    Orders will appear here when customers place orders.
+                </p>
+            </field>
+        </record>
+
+        <!-- Vendor Order Tree View -->
+        <record id="umkm_vendor_order_tree_view" model="ir.ui.view">
+            <field name="name">umkm.vendor.order.tree</field>
+            <field name="model">umkm.vendor.order</field>
+            <field name="arch" type="xml">
+                <tree string="Vendor Orders">
+                    <field name="name"/>
+                    <field name="main_order_id"/>
+                    <field name="vendor_id"/>
+                    <field name="customer_id"/>
+                    <field name="date_order"/>
+                    <field name="amount_total" widget="monetary"/>
+                    <field name="commission_amount" widget="monetary"/>
+                    <field name="vendor_amount" widget="monetary"/>
+                    <field name="tracking_number"/>
+                    <field name="state" decoration-success="state=='delivered'" decoration-info="state=='shipped'" decoration-warning="state=='processing'"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vendor Order Form View -->
+        <record id="umkm_vendor_order_form_view" model="ir.ui.view">
+            <field name="name">umkm.vendor.order.form</field>
+            <field name="model">umkm.vendor.order</field>
+            <field name="arch" type="xml">
+                <form string="Vendor Order">
+                    <header>
+                        <button name="action_process" string="Process" type="object" 
+                                invisible="state != 'confirmed'" class="btn-primary"/>
+                        <button name="action_ready_to_ship" string="Ready to Ship" type="object" 
+                                invisible="state != 'processing'" class="btn-primary"/>
+                        <button name="action_ship" string="Ship" type="object" 
+                                invisible="state != 'ready'" class="btn-primary"/>
+                        <button name="action_deliver" string="Mark as Delivered" type="object" 
+                                invisible="state != 'shipped'" class="btn-success"/>
+                        <field name="state" widget="statusbar" statusbar_visible="confirmed,processing,ready,shipped,delivered"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="main_order_id"/>
+                                <field name="vendor_id"/>
+                                <field name="customer_id"/>
+                                <field name="date_order"/>
+                            </group>
+                            <group>
+                                <field name="delivery_address_id"/>
+                                <field name="delivery_method_id"/>
+                                <field name="tracking_number"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Order Lines">
+                                <field name="order_line_ids">
+                                    <tree>
+                                        <field name="product_id"/>
+                                        <field name="name"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="price_unit"/>
+                                        <field name="price_total" widget="monetary"/>
+                                    </tree>
+                                </field>
+                                
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_total" widget="monetary"/>
+                                    <field name="commission_amount" widget="monetary"/>
+                                    <div class="oe_subtotal_footer_separator oe_inline">
+                                        <label for="vendor_amount"/>
+                                        <field name="vendor_amount" nolabel="1" class="oe_subtotal_footer_total" widget="monetary"/>
+                                    </div>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vendor Order Action -->
+        <record id="umkm_vendor_order_action" model="ir.actions.act_window">
+            <field name="name">Vendor Orders</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">umkm.vendor.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+
     </data>
 </odoo>

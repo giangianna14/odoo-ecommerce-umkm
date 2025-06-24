@@ -1,52 +1,339 @@
-# Contributing to UMKM Digital Hub
+# Contributing Guidelines
 
-Terima kasih atas minat Anda untuk berkontribusi pada UMKM Digital Hub! 🎉
+## 🎯 Welcome Contributors!
 
-## 🚀 Cara Berkontribusi
+Thank you for your interest in contributing to the UMKM Marketplace project! This guide will help you get started with contributing to our open-source e-commerce platform for Indonesian MSMEs.
 
-### 1. Fork Repository
-- Fork repository ini ke akun GitHub Anda
-- Clone repository yang sudah di-fork ke local machine
+## 📋 Table of Contents
 
+1. [Code of Conduct](#code-of-conduct)
+2. [Getting Started](#getting-started)
+3. [Development Setup](#development-setup)
+4. [Contributing Process](#contributing-process)
+5. [Coding Standards](#coding-standards)
+6. [Testing Guidelines](#testing-guidelines)
+7. [Documentation](#documentation)
+8. [Review Process](#review-process)
+
+---
+
+## 🤝 Code of Conduct
+
+### Our Pledge
+We are committed to making participation in our project a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
+
+### Expected Behavior
+- Use welcoming and inclusive language
+- Be respectful of differing viewpoints and experiences
+- Gracefully accept constructive criticism
+- Focus on what is best for the community
+- Show empathy towards other community members
+
+### Unacceptable Behavior
+- The use of sexualized language or imagery
+- Personal attacks or insulting/derogatory comments
+- Public or private harassment
+- Publishing others' private information without permission
+- Other conduct which could reasonably be considered inappropriate
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.8+
+- Docker & Docker Compose
+- Git
+- Basic knowledge of Odoo framework
+- Understanding of Python, JavaScript, XML
+
+### First Contribution
+1. **Find an Issue**: Look for issues labeled `good first issue` or `help wanted`
+2. **Fork the Repository**: Create your own fork of the project
+3. **Create a Branch**: Make a feature branch from `develop`
+4. **Make Changes**: Implement your changes following our guidelines
+5. **Submit a PR**: Create a pull request with a clear description
+
+### Types of Contributions
+- **Bug Fixes**: Fix existing issues
+- **Features**: Add new functionality
+- **Documentation**: Improve documentation
+- **Testing**: Add or improve tests
+- **Translations**: Add or improve language support
+- **Performance**: Optimize existing code
+
+---
+
+## 💻 Development Setup
+
+### 1. Fork and Clone
 ```bash
-git clone https://github.com/[username]/odoo-ecommerce-umkm.git
+# Fork the repository on GitHub
+# Then clone your fork
+git clone https://github.com/YOUR_USERNAME/odoo-ecommerce-umkm.git
 cd odoo-ecommerce-umkm
+
+# Add upstream remote
+git remote add upstream https://github.com/ORIGINAL_OWNER/odoo-ecommerce-umkm.git
 ```
 
-### 2. Setup Development Environment
-Ikuti panduan di [README.md](./README.md) untuk setup environment development.
-
-### 3. Buat Branch Baru
+### 2. Development Environment
 ```bash
-git checkout -b feature/nama-fitur-baru
-# atau
-git checkout -b bugfix/nama-bug-yang-diperbaiki
+# Copy environment file
+cp .env.example .env.dev
+
+# Start development environment
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+# Install development dependencies
+pip install -r requirements-dev.txt
 ```
 
-### 4. Lakukan Perubahan
-- Ikuti coding standards yang ada
-- Tambahkan tests untuk fitur baru
-- Update dokumentasi jika diperlukan
-
-### 5. Commit dan Push
+### 3. Database Setup
 ```bash
+# Initialize development database
+python3 scripts/init_dev_db.py
+
+# Load test data
+python3 scripts/load_test_data.py
+```
+
+### 4. Enable Developer Mode
+1. Access Odoo at `http://localhost:8069`
+2. Go to Settings → Activate Developer Mode
+3. Install UMKM Marketplace module
+
+---
+
+## 🔄 Contributing Process
+
+### 1. Create Feature Branch
+```bash
+# Update your fork
+git fetch upstream
+git checkout develop
+git merge upstream/develop
+
+# Create feature branch
+git checkout -b feature/your-feature-name
+# or
+git checkout -b bugfix/issue-number-description
+```
+
+### 2. Make Changes
+- Follow our coding standards
+- Add tests for new functionality
+- Update documentation as needed
+- Ensure all tests pass
+
+### 3. Commit Changes
+```bash
+# Stage your changes
 git add .
-git commit -m "feat: menambahkan fitur X"
-git push origin feature/nama-fitur-baru
+
+# Commit with descriptive message
+git commit -m "feat: add vendor commission calculation
+
+- Implement automatic commission calculation
+- Add commission rules configuration
+- Update vendor dashboard with commission data
+- Add tests for commission calculation logic
+
+Closes #123"
 ```
 
-### 6. Buat Pull Request
-- Buat pull request dari branch Anda ke branch `main`
-- Berikan deskripsi yang jelas tentang perubahan
-- Link ke issue yang terkait (jika ada)
+### 4. Push and Create PR
+```bash
+# Push to your fork
+git push origin feature/your-feature-name
+
+# Create Pull Request on GitHub
+# Include description, issue references, and testing instructions
+```
+
+---
 
 ## 📝 Coding Standards
 
-### Python Code
-- Ikuti [PEP 8](https://www.python.org/dev/peps/pep-0008/)
-- Gunakan `black` untuk formatting
-- Gunakan `flake8` untuk linting
-- Tambahkan docstrings untuk functions dan classes
+### Python Code Style
+We follow PEP 8 with some modifications:
+
+```python
+# Good: Clear variable names
+def calculate_vendor_commission(order_amount, commission_rate):
+    """Calculate commission for vendor based on order amount."""
+    return order_amount * (commission_rate / 100)
+
+# Good: Proper docstrings
+class UmkmVendor(models.Model):
+    """UMKM Vendor model for marketplace vendors.
+    
+    This model handles vendor information, commission rates,
+    and business verification status.
+    """
+    _name = 'umkm.vendor'
+    _description = 'UMKM Marketplace Vendor'
+```
+
+### JavaScript/XML Standards
+```javascript
+// Good: Use modern JavaScript
+const calculateTotal = (items) => {
+    return items.reduce((total, item) => total + item.price, 0);
+};
+
+// Good: Consistent XML formatting
+<record id="umkm_vendor_form_view" model="ir.ui.view">
+    <field name="name">umkm.vendor.form</field>
+    <field name="model">umkm.vendor</field>
+    <field name="arch" type="xml">
+        <form string="Vendor">
+            <group>
+                <field name="name" required="1"/>
+                <field name="email"/>
+            </group>
+        </form>
+    </field>
+</record>
+```
+
+### Code Quality Tools
+```bash
+# Install development tools
+pip install flake8 black isort pylint
+
+# Format code
+black custom_modules/
+isort custom_modules/
+
+# Check code quality
+flake8 custom_modules/
+pylint custom_modules/
+```
+
+---
+
+## 🧪 Testing Guidelines
+
+### Test Structure
+```
+tests/
+├── unit/           # Unit tests
+├── integration/    # Integration tests
+├── functional/     # Functional tests
+└── fixtures/       # Test data
+```
+
+### Writing Tests
+```python
+# Example unit test
+from odoo.tests import TransactionCase
+
+class TestUmkmCommission(TransactionCase):
+    
+    def setUp(self):
+        super().setUp()
+        self.vendor = self.env['umkm.vendor'].create({
+            'name': 'Test Vendor',
+            'commission_rate': 5.0
+        })
+    
+    def test_commission_calculation(self):
+        """Test commission calculation logic."""
+        order_amount = 1000000  # 1 million IDR
+        expected_commission = 50000  # 5% of 1 million
+        
+        commission = self.vendor._calculate_commission(order_amount)
+        self.assertEqual(commission, expected_commission)
+```
+
+### Running Tests
+```bash
+# Run all tests
+docker-compose exec odoo python -m pytest tests/
+
+# Run specific test file
+docker-compose exec odoo python -m pytest tests/unit/test_commission.py
+
+# Run with coverage
+docker-compose exec odoo python -m pytest --cov=custom_modules tests/
+```
+
+---
+
+## � Documentation
+
+### Code Documentation
+- Use clear docstrings for all methods and classes
+- Include parameter descriptions and return values
+- Add usage examples for complex functions
+
+### User Documentation
+- Update user guides for new features
+- Include screenshots for UI changes
+- Provide step-by-step instructions
+
+### API Documentation
+- Document all new API endpoints
+- Include request/response examples
+- Update OpenAPI specifications
+
+---
+
+## 👀 Review Process
+
+### Pull Request Guidelines
+1. **Clear Title**: Use descriptive title with prefix (feat:, fix:, docs:, etc.)
+2. **Description**: Include what, why, and how
+3. **Issue Reference**: Link to related issues
+4. **Testing**: Describe how to test the changes
+5. **Breaking Changes**: Highlight any breaking changes
+
+### PR Template
+```markdown
+## Description
+Brief description of changes
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change
+- [ ] Documentation update
+
+## Related Issues
+Closes #123
+
+## Testing
+- [ ] Unit tests pass
+- [ ] Integration tests pass
+- [ ] Manual testing completed
+
+## Screenshots (if applicable)
+![Screenshot](url)
+
+## Checklist
+- [ ] Code follows style guidelines
+- [ ] Self-review completed
+- [ ] Comments added for complex code
+- [ ] Documentation updated
+- [ ] Tests added/updated
+```
+
+---
+
+## 📞 Getting Help
+
+### Communication Channels
+- **GitHub Issues**: Bug reports and feature requests
+- **Discussions**: General questions and ideas
+- **Email**: contact@umkmdigital.id
+
+### Mentorship Program
+New contributors can request mentorship from experienced contributors. Contact us to be paired with a mentor.
+
+---
+
+Thank you for contributing to UMKM Marketplace! Together, we can build an amazing e-commerce platform for Indonesian MSMEs. 🚀
 
 ```python
 def calculate_commission(self, amount: float) -> float:

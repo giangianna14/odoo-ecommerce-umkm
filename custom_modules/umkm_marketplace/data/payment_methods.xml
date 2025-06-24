@@ -1,6 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <!-- Payment methods will be defined here -->
+    <data noupdate="1">
+        
+        <!-- Indonesian Payment Methods -->
+        <record id="payment_method_bank_transfer" model="umkm.payment.method">
+            <field name="name">Bank Transfer</field>
+            <field name="code">bank_transfer</field>
+            <field name="method_type">bank_transfer</field>
+            <field name="provider">Manual</field>
+            <field name="fees">0.0</field>
+            <field name="is_online" eval="False"/>
+            <field name="requires_verification" eval="True"/>
+            <field name="processing_time">1-2 business days</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="payment_method_dana" model="umkm.payment.method">
+            <field name="name">DANA</field>
+            <field name="code">dana</field>
+            <field name="method_type">ewallet</field>
+            <field name="provider">DANA</field>
+            <field name="fees">1.5</field>
+            <field name="is_online" eval="True"/>
+            <field name="requires_verification" eval="False"/>
+            <field name="processing_time">Instant</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="payment_method_ovo" model="umkm.payment.method">
+            <field name="name">OVO</field>
+            <field name="code">ovo</field>
+            <field name="method_type">ewallet</field>
+            <field name="provider">OVO</field>
+            <field name="fees">1.5</field>
+            <field name="is_online" eval="True"/>
+            <field name="requires_verification" eval="False"/>
+            <field name="processing_time">Instant</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="payment_method_gopay" model="umkm.payment.method">
+            <field name="name">GoPay</field>
+            <field name="code">gopay</field>
+            <field name="method_type">ewallet</field>
+            <field name="provider">GoPay</field>
+            <field name="fees">1.5</field>
+            <field name="is_online" eval="True"/>
+            <field name="requires_verification" eval="False"/>
+            <field name="processing_time">Instant</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="payment_method_qris" model="umkm.payment.method">
+            <field name="name">QRIS</field>
+            <field name="code">qris</field>
+            <field name="method_type">qris</field>
+            <field name="provider">QRIS</field>
+            <field name="fees">0.7</field>
+            <field name="is_online" eval="True"/>
+            <field name="requires_verification" eval="False"/>
+            <field name="processing_time">Instant</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <record id="payment_method_credit_card" model="umkm.payment.method">
+            <field name="name">Credit Card</field>
+            <field name="code">credit_card</field>
+            <field name="method_type">credit_card</field>
+            <field name="provider">Midtrans</field>
+            <field name="fees">2.9</field>
+            <field name="is_online" eval="True"/>
+            <field name="requires_verification" eval="False"/>
+            <field name="processing_time">Instant</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="payment_method_cod" model="umkm.payment.method">
+            <field name="name">Cash on Delivery</field>
+            <field name="code">cod</field>
+            <field name="method_type">cash_on_delivery</field>
+            <field name="provider">Manual</field>
+            <field name="fees">0.0</field>
+            <field name="is_online" eval="False"/>
+            <field name="requires_verification" eval="False"/>
+            <field name="processing_time">On delivery</field>
+            <field name="sequence">70</field>
+        </record>
+
     </data>
 </odoo>

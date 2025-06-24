@@ -1,6 +1,277 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Content will be defined here -->
+        
+        <!-- Dashboard Form View -->
+        <record id="umkm_dashboard_form_view" model="ir.ui.view">
+            <field name="name">umkm.dashboard.form</field>
+            <field name="model">umkm.dashboard</field>
+            <field name="arch" type="xml">
+                <form string="UMKM Dashboard" create="false" edit="false" delete="false">
+                    <header>
+                        <button name="action_refresh_dashboard" string="Refresh" type="object" class="btn-primary"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                            <p>Last Updated: <field name="last_update" readonly="1"/></p>
+                        </div>
+                        
+                        <!-- Sales Metrics -->
+                        <group string="Sales Overview">
+                            <group>
+                                <field name="total_sales" widget="monetary" readonly="1"/>
+                                <field name="monthly_sales" widget="monetary" readonly="1"/>
+                                <field name="daily_sales" widget="monetary" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="sales_growth" readonly="1" widget="percentage"/>
+                                <field name="revenue_today" widget="monetary" readonly="1"/>
+                                <field name="revenue_this_week" widget="monetary" readonly="1"/>
+                                <field name="revenue_this_month" widget="monetary" readonly="1"/>
+                                <field name="average_order_value" widget="monetary" readonly="1"/>
+                            </group>
+                        </group>
+                        
+                        <!-- Order Metrics -->
+                        <group string="Order Overview">
+                            <group>
+                                <field name="total_orders" readonly="1"/>
+                                <field name="pending_orders" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="completed_orders" readonly="1"/>
+                                <field name="cancelled_orders" readonly="1"/>
+                            </group>
+                        </group>
+                        
+                        <!-- Vendor Metrics -->
+                        <group string="Vendor Overview">
+                            <group>
+                                <field name="total_vendors" readonly="1"/>
+                                <field name="active_vendors" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="new_vendors_this_month" readonly="1"/>
+                                <field name="top_vendor_id" readonly="1"/>
+                            </group>
+                        </group>
+                        
+                        <!-- Product Metrics -->
+                        <group string="Product Overview">
+                            <group>
+                                <field name="total_products" readonly="1"/>
+                                <field name="published_products" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="pending_approval_products" readonly="1"/>
+                                <field name="low_stock_products" readonly="1"/>
+                            </group>
+                        </group>
+                        
+                        <!-- Commission Metrics -->
+                        <group string="Commission Overview">
+                            <group>
+                                <field name="total_commission" widget="monetary" readonly="1"/>
+                                <field name="monthly_commission" widget="monetary" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="pending_commission" widget="monetary" readonly="1"/>
+                                <field name="paid_commission" widget="monetary" readonly="1"/>
+                            </group>
+                        </group>
+                        
+                        <!-- Customer Metrics -->
+                        <group string="Customer Overview">
+                            <group>
+                                <field name="total_customers" readonly="1"/>
+                                <field name="new_customers_this_month" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="repeat_customers" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Dashboard Action -->
+        <record id="umkm_dashboard_action" model="ir.actions.act_window">
+            <field name="name">Dashboard</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">umkm.dashboard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="umkm_dashboard_form_view"/>
+            <field name="target">current</field>
+            <field name="context">{'form_view_initial_mode': 'readonly'}</field>
+        </record>
+
+        <!-- Payment Method Tree View -->
+        <record id="umkm_payment_method_tree_view" model="ir.ui.view">
+            <field name="name">umkm.payment.method.tree</field>
+            <field name="model">umkm.payment.method</field>
+            <field name="arch" type="xml">
+                <tree string="Payment Methods">
+                    <field name="sequence" widget="handle"/>
+                    <field name="icon" widget="image" class="oe_avatar"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="method_type"/>
+                    <field name="provider"/>
+                    <field name="fees"/>
+                    <field name="is_online"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Payment Method Form View -->
+        <record id="umkm_payment_method_form_view" model="ir.ui.view">
+            <field name="name">umkm.payment.method.form</field>
+            <field name="model">umkm.payment.method</field>
+            <field name="arch" type="xml">
+                <form string="Payment Method">
+                    <sheet>
+                        <field name="icon" widget="image" class="oe_avatar" options="{'preview_image': 'icon'}"/>
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Payment Method Name"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="code" required="1"/>
+                                <field name="method_type" required="1"/>
+                                <field name="provider"/>
+                                <field name="sequence"/>
+                            </group>
+                            <group>
+                                <field name="fees"/>
+                                <field name="min_amount" widget="monetary"/>
+                                <field name="max_amount" widget="monetary"/>
+                                <field name="processing_time"/>
+                            </group>
+                        </group>
+                        
+                        <group>
+                            <group string="Configuration">
+                                <field name="is_online"/>
+                                <field name="requires_verification"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        
+                        <group>
+                            <field name="description"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Payment Method Action -->
+        <record id="umkm_payment_method_action" model="ir.actions.act_window">
+            <field name="name">Payment Methods</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">umkm.payment.method</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+
+        <!-- Delivery Method Tree View -->
+        <record id="umkm_delivery_method_tree_view" model="ir.ui.view">
+            <field name="name">umkm.delivery.method.tree</field>
+            <field name="model">umkm.delivery.method</field>
+            <field name="arch" type="xml">
+                <tree string="Delivery Methods">
+                    <field name="sequence" widget="handle"/>
+                    <field name="logo" widget="image" class="oe_avatar"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="provider"/>
+                    <field name="service_type"/>
+                    <field name="base_price" widget="monetary"/>
+                    <field name="price_per_kg" widget="monetary"/>
+                    <field name="estimated_days_min"/>
+                    <field name="estimated_days_max"/>
+                    <field name="has_tracking"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Delivery Method Form View -->
+        <record id="umkm_delivery_method_form_view" model="ir.ui.view">
+            <field name="name">umkm.delivery.method.form</field>
+            <field name="model">umkm.delivery.method</field>
+            <field name="arch" type="xml">
+                <form string="Delivery Method">
+                    <sheet>
+                        <field name="logo" widget="image" class="oe_avatar" options="{'preview_image': 'logo'}"/>
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Delivery Method Name"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="code" required="1"/>
+                                <field name="provider" required="1"/>
+                                <field name="service_type"/>
+                                <field name="sequence"/>
+                            </group>
+                            <group>
+                                <field name="base_price" widget="monetary"/>
+                                <field name="price_per_kg" widget="monetary"/>
+                                <field name="max_weight"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Delivery Information">
+                            <group>
+                                <field name="estimated_days_min"/>
+                                <field name="estimated_days_max"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Features">
+                            <group>
+                                <field name="has_tracking"/>
+                                <field name="has_insurance"/>
+                            </group>
+                            <group>
+                                <field name="requires_pickup"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Coverage Areas">
+                            <field name="coverage_area_ids" widget="many2many_tags"/>
+                        </group>
+                        
+                        <group>
+                            <field name="description"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Delivery Method Action -->
+        <record id="umkm_delivery_method_action" model="ir.actions.act_window">
+            <field name="name">Delivery Methods</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">umkm.delivery.method</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+
     </data>
 </odoo>

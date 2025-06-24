@@ -1,6 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Content will be defined here -->
+        
+        <!-- Certification Tree View -->
+        <record id="umkm_certification_tree_view" model="ir.ui.view">
+            <field name="name">umkm.certification.tree</field>
+            <field name="model">umkm.certification</field>
+            <field name="arch" type="xml">
+                <tree string="Certifications">
+                    <field name="name"/>
+                    <field name="vendor_id"/>
+                    <field name="certification_type"/>
+                    <field name="certificate_number"/>
+                    <field name="issuing_authority"/>
+                    <field name="issue_date"/>
+                    <field name="expiry_date"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Certification Form View -->
+        <record id="umkm_certification_form_view" model="ir.ui.view">
+            <field name="name">umkm.certification.form</field>
+            <field name="model">umkm.certification</field>
+            <field name="arch" type="xml">
+                <form string="Certification">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Certification Name"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="vendor_id" required="1"/>
+                                <field name="certification_type"/>
+                                <field name="certificate_number"/>
+                                <field name="issuing_authority"/>
+                            </group>
+                            <group>
+                                <field name="issue_date"/>
+                                <field name="expiry_date"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Description">
+                                <field name="description" nolabel="1"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Certification Search View -->
+        <record id="umkm_certification_search_view" model="ir.ui.view">
+            <field name="name">umkm.certification.search</field>
+            <field name="model">umkm.certification</field>
+            <field name="arch" type="xml">
+                <search string="Certifications">
+                    <field name="name" string="Certification" filter_domain="[('name','ilike',self)]"/>
+                    <field name="vendor_id"/>
+                    <field name="certification_type"/>
+                    <field name="certificate_number"/>
+                    <separator/>
+                    <filter string="Halal" name="halal" domain="[('certification_type', '=', 'halal')]"/>
+                    <filter string="SNI" name="sni" domain="[('certification_type', '=', 'sni')]"/>
+                    <filter string="ISO" name="iso" domain="[('certification_type', '=', 'iso')]"/>
+                    <filter string="HACCP" name="haccp" domain="[('certification_type', '=', 'haccp')]"/>
+                    <filter string="Organic" name="organic" domain="[('certification_type', '=', 'organic')]"/>
+                    <separator/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Vendor" name="group_vendor" domain="[]" context="{'group_by':'vendor_id'}"/>
+                        <filter string="Type" name="group_type" domain="[]" context="{'group_by':'certification_type'}"/>
+                        <filter string="Issue Date" name="group_issue_date" domain="[]" context="{'group_by':'issue_date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Certification Action -->
+        <record id="action_umkm_certification" model="ir.actions.act_window">
+            <field name="name">Certifications</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">umkm.certification</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="umkm_certification_search_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first certification!
+                </p>
+                <p>
+                    Certifications help verify vendor qualifications and build trust.
+                </p>
+            </field>
+        </record>
+
     </data>
 </odoo>

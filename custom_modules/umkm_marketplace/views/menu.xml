@@ -8,11 +8,53 @@
                   sequence="10"
                   web_icon="umkm_marketplace,static/description/icon.png"/>
 
+        <!-- Dashboard Menu -->
+        <menuitem id="menu_umkm_dashboard" 
+                  name="Dashboard" 
+                  parent="menu_umkm_marketplace_root" 
+                  sequence="5"/>
+
+        <!-- Sales Menu -->
+        <menuitem id="menu_umkm_sales" 
+                  name="Sales" 
+                  parent="menu_umkm_marketplace_root" 
+                  sequence="10"/>
+
+        <menuitem id="menu_umkm_orders" 
+                  name="Orders" 
+                  parent="menu_umkm_sales" 
+                  action="umkm_order_action"
+                  sequence="10"/>
+
+        <menuitem id="menu_umkm_vendor_orders" 
+                  name="Vendor Orders" 
+                  parent="menu_umkm_sales" 
+                  action="umkm_vendor_order_action"
+                  sequence="20"/>
+
+        <!-- Products Menu -->
+        <menuitem id="menu_umkm_products" 
+                  name="Products" 
+                  parent="menu_umkm_marketplace_root" 
+                  sequence="20"/>
+
+        <menuitem id="menu_umkm_product_list" 
+                  name="All Products" 
+                  parent="menu_umkm_products" 
+                  action="umkm_product_action"
+                  sequence="10"/>
+
+        <menuitem id="menu_umkm_product_tags" 
+                  name="Product Tags" 
+                  parent="menu_umkm_products" 
+                  action="umkm_product_tag_action"
+                  sequence="20"/>
+
         <!-- Vendors Menu -->
         <menuitem id="menu_umkm_vendors" 
                   name="Vendors" 
                   parent="menu_umkm_marketplace_root" 
-                  sequence="10"/>
+                  sequence="30"/>
 
         <menuitem id="menu_umkm_vendor_list" 
                   name="All Vendors" 
@@ -20,11 +62,53 @@
                   action="action_umkm_vendor" 
                   sequence="10"/>
 
+        <menuitem id="menu_umkm_certifications" 
+                  name="Certifications" 
+                  parent="menu_umkm_vendors" 
+                  action="action_umkm_certification"
+                  sequence="20"/>
+
+        <!-- Commission Menu -->
+        <menuitem id="menu_umkm_commission" 
+                  name="Commission" 
+                  parent="menu_umkm_marketplace_root" 
+                  sequence="40"/>
+
+        <menuitem id="menu_umkm_commission_list" 
+                  name="All Commissions" 
+                  parent="menu_umkm_commission" 
+                  action="umkm_commission_action"
+                  sequence="10"/>
+
+        <menuitem id="menu_umkm_commission_rules" 
+                  name="Commission Rules" 
+                  parent="menu_umkm_commission" 
+                  action="umkm_commission_rule_action"
+                  sequence="20"/>
+
+        <menuitem id="menu_umkm_commission_report" 
+                  name="Commission Report" 
+                  parent="menu_umkm_commission" 
+                  action="umkm_commission_report_action"
+                  sequence="30"/>
+
         <!-- Configuration Menu -->
         <menuitem id="menu_umkm_configuration" 
                   name="Configuration" 
                   parent="menu_umkm_marketplace_root" 
                   sequence="90"/>
+
+        <menuitem id="menu_umkm_payment_methods" 
+                  name="Payment Methods" 
+                  parent="menu_umkm_configuration" 
+                  action="umkm_payment_method_action"
+                  sequence="10"/>
+
+        <menuitem id="menu_umkm_delivery_methods" 
+                  name="Delivery Methods" 
+                  parent="menu_umkm_configuration" 
+                  action="umkm_delivery_method_action"
+                  sequence="20"/>
 
     </data>
 </odoo>
